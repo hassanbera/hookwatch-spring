@@ -1,0 +1,300 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="HookWatch ana sayfa"
+      ><span class="brand-icon">⌁</span>HookWatch<span class="brand-dot"
+        >.</span
+      ></a
+    >
+    <div class="workspace">
+      <span class="avatar">B</span>
+      <div>
+        <strong>Çalışma alanım</strong><small>Takım çalışma alanı</small>
+      </div>
+    </div>
+    <p class="nav-label">ÇALIŞMA ALANI</p>
+    <nav>
+      <a href="/" class="active"
+        ><span>⌁</span>Teslimatlar<span class="nav-indicator"></span
+      ></a>
+    </nav>
+    <div class="sidebar-note">
+      <span class="status-dot"></span>Her şey yerli yerinde.<small
+        >Bir sonraki adıma odaklan.</small
+      >
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <span
+        >Çalışma alanı <span class="crumb">/</span>
+        <strong>Teslimatlar</strong></span
+      ><span class="avatar">HB</span>
+    </header>
+    <main>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">HER OLAYIN İZİNİ SÜR.</p>
+          <h1>Teslimat merkezi</h1>
+          <p class="subtitle">
+            Bağlantıların nabzını tut. Hiçbir olayı kaçırma.
+          </p>
+        </div>
+        <button class="primary" (click)="panel.set('event')">
+          + Yeni olay
+        </button>
+      </div>
+      @if (error()) {
+        <div class="alert" role="alert">
+          {{ error()
+          }}<button
+            type="button"
+            class="quiet"
+            (click)="error.set('')"
+            aria-label="Hata bildirimini kapat"
+          >
+            ×
+          </button>
+        </div>
+      }
+      @if (notice()) {
+        <div class="notice" role="status">{{ notice() }}</div>
+      }
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-top">
+            Teslimat<span class="metric-icon">↗</span>
+          </div>
+          <strong>{{ deliveries().length }}</strong
+          ><small>Son 100 kayıt</small>
+        </div>
+        <div class="metric">
+          <div class="metric-top">
+            Başarılı<span class="metric-icon">✓</span>
+          </div>
+          <strong>{{ delivered() }}</strong
+          ><small>Hedefe ulaşan olaylar</small>
+        </div>
+        <div class="metric">
+          <div class="metric-top">
+            Başarısız<span class="metric-icon">!</span>
+          </div>
+          <strong>{{ failed() }}</strong
+          ><small>İlgini bekleyen teslimatlar</small>
+        </div>
+        <div class="metric">
+          <div class="metric-top">
+            Hedefler<span class="metric-icon">⌁</span>
+          </div>
+          <strong>{{ endpoints().length }}</strong
+          ><small>Bağlı webhook uçları</small>
+        </div>
+      </div>
+      @if (panel() === "endpoint") {
+        <form class="panel form-panel" (ngSubmit)="saveEndpoint()">
+          <div class="form-head">
+            <h2>Yeni webhook hedefi</h2>
+            <button type="button" class="quiet" (click)="close()">Kapat</button>
+          </div>
+          <div class="form-grid">
+            <label
+              >Hedef adı<input
+                name="name"
+                [(ngModel)]="endpoint.name"
+                required
+                maxlength="100" /></label
+            ><label class="span2"
+              >URL<input
+                name="url"
+                type="url"
+                [(ngModel)]="endpoint.url"
+                required
+                maxlength="500"
+            /></label>
+          </div>
+          <div class="form-actions">
+            <button class="primary" [disabled]="busy()">Hedefi kaydet</button
+            ><span class="help"
+              >Yalnızca sunucunun izin verdiği adreslere gönderim yapılır.</span
+            >
+          </div>
+        </form>
+      }
+      @if (panel() === "event") {
+        <form class="panel form-panel" (ngSubmit)="saveEvent()">
+          <div class="form-head">
+            <h2>Yeni olay</h2>
+            <button type="button" class="quiet" (click)="close()">Kapat</button>
+          </div>
+          <div class="form-grid">
+            <label
+              >Hedef<select
+                name="endpoint"
+                [(ngModel)]="event.endpointId"
+                required
+              >
+                @for (e of endpoints(); track e.id) {
+                  <option [value]="e.id">{{ e.name }}</option>
+                }
+              </select></label
+            ><label class="span2"
+              >Olay türü<input
+                name="eventType"
+                [(ngModel)]="event.eventType"
+                required
+                maxlength="80" /></label
+            ><label class="span3"
+              >JSON gövdesi<textarea
+                name="payload"
+                [(ngModel)]="event.payload"
+                required
+                rows="7"
+                maxlength="32000"
+                spellcheck="false"
+              ></textarea>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="primary" [disabled]="busy() || !endpoints().length">
+              Kuyruğa ekle</button
+            ><span class="help"
+              >Gönderim sonucunu teslimat ayrıntısından takip edebilirsin.</span
+            >
+          </div>
+        </form>
+      }
+      <section class="panel">
+        <div class="toolbar">
+          <input
+            class="search"
+            aria-label="Teslimat ara"
+            placeholder="Olay türü veya kimlik ara…"
+            [ngModel]="query()"
+            (ngModelChange)="query.set($event)"
+          /><select
+            aria-label="Durum filtresi"
+            [ngModel]="filter()"
+            (ngModelChange)="filter.set($event)"
+          >
+            <option value="">Tüm durumlar</option>
+            <option value="DELIVERED">Başarılı</option>
+            <option value="QUEUED">Kuyrukta</option>
+            <option value="FAILED">Başarısız</option></select
+          ><button class="secondary" (click)="panel.set('endpoint')">
+            + Hedef ekle</button
+          ><button
+            class="quiet"
+            aria-label="Teslimatları yenile"
+            (click)="run(load.bind(this))"
+          >
+            ↻
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>OLAY</th>
+                <th>HEDEF</th>
+                <th>DURUM</th>
+                <th>DENEME</th>
+                <th>OLUŞTURULDU</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of visible(); track d.id) {
+                <tr>
+                  <td>
+                    <strong>{{ d.eventType }}</strong
+                    ><br /><small>{{ d.id.slice(0, 8) }}</small>
+                  </td>
+                  <td>{{ name(d.endpointId) }}</td>
+                  <td>
+                    <span class="badge" [class]="'badge ' + d.status">{{
+                      d.status === "DELIVERED"
+                        ? "Başarılı"
+                        : d.status === "FAILED"
+                          ? "Başarısız"
+                          : "Kuyrukta"
+                    }}</span>
+                  </td>
+                  <td>{{ d.attemptCount }}</td>
+                  <td>{{ date(d.createdAt) }} · {{ time(d.createdAt) }}</td>
+                  <td>
+                    <button class="secondary" (click)="select(d.id)">
+                      İncele →
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        @if (!visible().length) {
+          <div class="empty">
+            <strong>Her olayın izini sür.</strong>Bir hedef ekle ve ilk olayını
+            gönder.
+          </div>
+        }
+      </section>
+      @if (detail(); as d) {
+        <section class="panel" style="margin-top: 20px">
+          <div class="detail-head">
+            <div>
+              <h2>{{ d.delivery.eventType }}</h2>
+              <p>{{ d.delivery.id }} · {{ name(d.delivery.endpointId) }}</p>
+            </div>
+            <div>
+              @if (d.delivery.status === "FAILED") {
+                <button
+                  class="secondary"
+                  (click)="retry(d.delivery.id)"
+                  [disabled]="busy()"
+                >
+                  Yeniden dene
+                </button>
+              }
+              <button class="quiet" (click)="detail.set(null)">Kapat</button>
+            </div>
+          </div>
+          <div class="detail-body">
+            <h3>Gönderilen veri</h3>
+            <pre class="code">{{ pretty(d.delivery.payload) }}</pre>
+            <h3>Deneme geçmişi</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>DENEME</th>
+                    <th>HTTP</th>
+                    <th>SÜRE</th>
+                    <th>SONUÇ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (a of d.attempts; track a.id) {
+                    <tr>
+                      <td>#{{ a.number }}</td>
+                      <td>{{ a.statusCode || "—" }}</td>
+                      <td>{{ a.durationMs }} ms</td>
+                      <td>{{ a.error || "Teslim edildi" }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            @if (!d.attempts.length) {
+              <p class="help">
+                Kuyruktaki olay henüz işlenmedi. Sonuç otomatik yenilenir.
+              </p>
+            }
+          </div>
+        </section>
+      }
+      <footer>
+        <strong>HookWatch.</strong
+        ><span>Detayları düzenle. Akışa odaklan.</span>
+      </footer>
+    </main>
+  </div>
+</div>
