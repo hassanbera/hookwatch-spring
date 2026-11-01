@@ -1,3 +1,4 @@
+import { NgbAlertModule, NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
 import {
   Component,
   signal,
@@ -58,7 +59,7 @@ interface DeliveryDetail {
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgbAlertModule, NgbTooltipModule],
   templateUrl: "./app.html",
   host: { "(document:keydown.escape)": "close()" },
 })

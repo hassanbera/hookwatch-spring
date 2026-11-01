@@ -1,0 +1,13 @@
+@use "bootstrap/scss/bootstrap" with (
+  $primary: #36c6ce,
+  $body-bg: #101820,
+  $body-color: #e1eaf3,
+  $border-color: #2a3847,
+  $secondary: #9aabbc,
+  $enable-shadows: false,
+  $font-family-sans-serif: (
+    Inter,
+    system-ui,
+    sans-serif,
+  )
+);
