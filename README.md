@@ -8,6 +8,10 @@ Her olayın izini sür. Webhook gönderimleri için kalıcı kuyruk ve izleme pa
 
 [Telefon görünümü](docs/mobile.png)
 
+## Arayüz
+
+**NG Bootstrap + Bootstrap** · Koyu operasyon ekranı, camgöbeği vurgu ve teslimat/deneme kayıtları. Tema sınırları ve doğrulama notları: [Arayüz sistemi](docs/ui.md).
+
 ## Özellikler
 
 - İzin verilen origin listesiyle hedef kaydı

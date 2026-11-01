@@ -1,45 +1,22 @@
-<div class="app-shell">
-  <aside class="sidebar">
-    <a class="brand" href="/" aria-label="HookWatch ana sayfa"
-      ><span class="brand-icon">⌁</span>HookWatch<span class="brand-dot"
-        >.</span
-      ></a
-    >
-    <div class="workspace">
-      <span class="avatar">B</span>
-      <div>
-        <strong>Çalışma alanım</strong><small>Takım çalışma alanı</small>
-      </div>
-    </div>
-    <p class="nav-label">ÇALIŞMA ALANI</p>
-    <nav>
-      <a href="/" class="active"
-        ><span>⌁</span>Teslimatlar<span class="nav-indicator"></span
-      ></a>
-    </nav>
-    <div class="sidebar-note">
-      <span class="status-dot"></span>Her şey yerli yerinde.<small
-        >Bir sonraki adıma odaklan.</small
-      >
-    </div>
+<div class="product-layout">
+  <aside class="product-rail">
+    <a class="brand-link" href="/">HookWatch</a
+    ><a href="/" class="rail-active">Teslimatlar</a
+    ><small>Olaylar · Kuyruk · Denemeler</small>
   </aside>
-  <div class="main">
-    <header class="topbar">
-      <span
-        >Çalışma alanı <span class="crumb">/</span>
-        <strong>Teslimatlar</strong></span
-      ><span class="avatar">HB</span>
+  <div class="product-content">
+    <header class="product-header">
+      <span>Teslimatlar</span><span>Çalışma alanı</span>
     </header>
-    <main>
+    <main class="product-main">
       <div class="page-heading">
         <div>
-          <p class="eyebrow">HER OLAYIN İZİNİ SÜR.</p>
           <h1>Teslimat merkezi</h1>
           <p class="subtitle">
             Bağlantıların nabzını tut. Hiçbir olayı kaçırma.
           </p>
         </div>
-        <button class="primary" (click)="panel.set('event')">
+        <button class="primary btn btn-primary" (click)="panel.set('event')">
           + Yeni olay
         </button>
       </div>
@@ -48,7 +25,7 @@
           {{ error()
           }}<button
             type="button"
-            class="quiet"
+            class="quiet btn btn-outline-secondary"
             (click)="error.set('')"
             aria-label="Hata bildirimini kapat"
           >
@@ -57,7 +34,9 @@
         </div>
       }
       @if (notice()) {
-        <div class="notice" role="status">{{ notice() }}</div>
+        <ngb-alert type="success" [dismissible]="false" role="status">{{
+          notice()
+        }}</ngb-alert>
       }
       <div class="metrics">
         <div class="metric">
@@ -93,17 +72,25 @@
         <form class="panel form-panel" (ngSubmit)="saveEndpoint()">
           <div class="form-head">
             <h2>Yeni webhook hedefi</h2>
-            <button type="button" class="quiet" (click)="close()">Kapat</button>
+            <button
+              type="button"
+              class="quiet btn btn-outline-secondary"
+              (click)="close()"
+            >
+              Kapat
+            </button>
           </div>
           <div class="form-grid">
             <label
               >Hedef adı<input
+                class="form-control"
                 name="name"
                 [(ngModel)]="endpoint.name"
                 required
                 maxlength="100" /></label
             ><label class="span2"
               >URL<input
+                class="form-control"
                 name="url"
                 type="url"
                 [(ngModel)]="endpoint.url"
@@ -112,7 +99,8 @@
             /></label>
           </div>
           <div class="form-actions">
-            <button class="primary" [disabled]="busy()">Hedefi kaydet</button
+            <button class="primary btn btn-primary" [disabled]="busy()">
+              Hedefi kaydet</button
             ><span class="help"
               >Yalnızca sunucunun izin verdiği adreslere gönderim yapılır.</span
             >
@@ -123,11 +111,18 @@
         <form class="panel form-panel" (ngSubmit)="saveEvent()">
           <div class="form-head">
             <h2>Yeni olay</h2>
-            <button type="button" class="quiet" (click)="close()">Kapat</button>
+            <button
+              type="button"
+              class="quiet btn btn-outline-secondary"
+              (click)="close()"
+            >
+              Kapat
+            </button>
           </div>
           <div class="form-grid">
             <label
               >Hedef<select
+                class="form-select"
                 name="endpoint"
                 [(ngModel)]="event.endpointId"
                 required
@@ -138,12 +133,14 @@
               </select></label
             ><label class="span2"
               >Olay türü<input
+                class="form-control"
                 name="eventType"
                 [(ngModel)]="event.eventType"
                 required
                 maxlength="80" /></label
             ><label class="span3"
               >JSON gövdesi<textarea
+                class="form-control"
                 name="payload"
                 [(ngModel)]="event.payload"
                 required
@@ -154,7 +151,10 @@
             </label>
           </div>
           <div class="form-actions">
-            <button class="primary" [disabled]="busy() || !endpoints().length">
+            <button
+              class="primary btn btn-primary"
+              [disabled]="busy() || !endpoints().length"
+            >
               Kuyruğa ekle</button
             ><span class="help"
               >Gönderim sonucunu teslimat ayrıntısından takip edebilirsin.</span
@@ -165,12 +165,13 @@
       <section class="panel">
         <div class="toolbar">
           <input
-            class="search"
+            class="form-control search"
             aria-label="Teslimat ara"
             placeholder="Olay türü veya kimlik ara…"
             [ngModel]="query()"
             (ngModelChange)="query.set($event)"
           /><select
+            class="form-select"
             aria-label="Durum filtresi"
             [ngModel]="filter()"
             (ngModelChange)="filter.set($event)"
@@ -179,10 +180,13 @@
             <option value="DELIVERED">Başarılı</option>
             <option value="QUEUED">Kuyrukta</option>
             <option value="FAILED">Başarısız</option></select
-          ><button class="secondary" (click)="panel.set('endpoint')">
+          ><button
+            class="secondary btn btn-outline-primary"
+            (click)="panel.set('endpoint')"
+          >
             + Hedef ekle</button
           ><button
-            class="quiet"
+            class="quiet btn btn-outline-secondary"
             aria-label="Teslimatları yenile"
             (click)="run(load.bind(this))"
           >
@@ -190,7 +194,7 @@
           </button>
         </div>
         <div class="table-wrap">
-          <table>
+          <table class="table table-hover align-middle">
             <thead>
               <tr>
                 <th>OLAY</th>
@@ -210,18 +214,26 @@
                   </td>
                   <td>{{ name(d.endpointId) }}</td>
                   <td>
-                    <span class="badge" [class]="'badge ' + d.status">{{
-                      d.status === "DELIVERED"
-                        ? "Başarılı"
-                        : d.status === "FAILED"
-                          ? "Başarısız"
-                          : "Kuyrukta"
-                    }}</span>
+                    <span
+                      class="delivery-status"
+                      [class]="'delivery-status ' + d.status"
+                      >{{
+                        d.status === "DELIVERED"
+                          ? "Başarılı"
+                          : d.status === "FAILED"
+                            ? "Başarısız"
+                            : "Kuyrukta"
+                      }}</span
+                    >
                   </td>
                   <td>{{ d.attemptCount }}</td>
                   <td>{{ date(d.createdAt) }} · {{ time(d.createdAt) }}</td>
                   <td>
-                    <button class="secondary" (click)="select(d.id)">
+                    <button
+                      class="secondary btn btn-outline-primary"
+                      ngbTooltip="Deneme geçmişini ve yanıtı aç"
+                      (click)="select(d.id)"
+                    >
                       İncele →
                     </button>
                   </td>
@@ -247,14 +259,19 @@
             <div>
               @if (d.delivery.status === "FAILED") {
                 <button
-                  class="secondary"
+                  class="secondary btn btn-outline-primary"
                   (click)="retry(d.delivery.id)"
                   [disabled]="busy()"
                 >
                   Yeniden dene
                 </button>
               }
-              <button class="quiet" (click)="detail.set(null)">Kapat</button>
+              <button
+                class="quiet btn btn-outline-secondary"
+                (click)="detail.set(null)"
+              >
+                Kapat
+              </button>
             </div>
           </div>
           <div class="detail-body">
@@ -262,7 +279,7 @@
             <pre class="code">{{ pretty(d.delivery.payload) }}</pre>
             <h3>Deneme geçmişi</h3>
             <div class="table-wrap">
-              <table>
+              <table class="table table-hover align-middle">
                 <thead>
                   <tr>
                     <th>DENEME</th>
@@ -291,10 +308,6 @@
           </div>
         </section>
       }
-      <footer>
-        <strong>HookWatch.</strong
-        ><span>Detayları düzenle. Akışa odaklan.</span>
-      </footer>
     </main>
   </div>
 </div>
